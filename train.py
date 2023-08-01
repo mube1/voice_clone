@@ -48,17 +48,18 @@ for e in tqdm(range(1, epochs+1)):
     real_b = Tensor(b)
     
     # Adversarial ground truths
-    real = torch.ones(batch_size, 1, 30, 30).type(Tensor)
-    real = torch.ones(batch_size,1, 22, 23).type(Tensor)
-    
-    fake = torch.zeros(batch_size, 1, 30, 30).type(Tensor)
+    # real = torch.ones(batch_size, 1, 30, 30).type(Tensor)
+    real = torch.ones(batch_size,1, 22, 23).type(Tensor)    
+    # fake = torch.zeros(batch_size, 1, 30, 30).type(Tensor)
     fake = torch.zeros(batch_size, 1, 22, 23).type(Tensor)
     
     # Train generator
     optim_G.zero_grad()
     
     fake_b = Generator(real_a)
-    pred_fake =Discriminator(fake_b)
+
+
+    pred_fake =Discriminator(fake_b.reshape(batch_size,1,400,425))
     loss_G = criterion_adversarial(pred_fake, real)
     
     loss_G.backward()
@@ -67,10 +68,12 @@ for e in tqdm(range(1, epochs+1)):
     # Train discriminator
     optim_D.zero_grad()
     
-    pred_real = Discriminator(real_b)
+    # pred_real = Discriminator(real_b)
+    pred_real =Discriminator(real_b.reshape(batch_size,1,400,425))
     loss_real = criterion_adversarial(pred_real, real)
     
-    pred_fake = Discriminator(fake_b.detach())
+    # pred_fake = Discriminator(fake_b.detach())
+    pred_fake = Discriminator(fake_b.reshape(batch_size,1,400,425).detach())
     loss_fake = criterion_adversarial(pred_fake, fake)
     
     loss_D = 0.5 * (loss_real + loss_fake)
