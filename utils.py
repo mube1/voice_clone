@@ -27,6 +27,8 @@ def audio_sampler(filenames, batch_size, return_max_power=False):
     
     max_power_a = []
     
+    max_length=170000
+    
     while True:
         indices = np.random.randint(len(filenames), size=batch_size)
         # generate batch_size  integers with max value len(files_names)
@@ -35,34 +37,9 @@ def audio_sampler(filenames, batch_size, return_max_power=False):
             audio_a, _ = librosa.load(filenames[idx][0], sr=sample_rate)
             audio_b, _ = librosa.load(filenames[idx][1], sr=sample_rate)
             
-            len_a = audio_a.size
-            len_b = audio_b.size
+            audio_a=np.pad(audio_a,int((max_length-len(audio_a))/2)+1, mode='constant')[:max_length]
+            audio_b=np.pad(audio_b,int((max_length-len(audio_b))/2)+1, mode='constant')[:max_length]
             
-            if len_a < 3*sample_rate:
-                diff = 3*sample_rate - len_a
-                audio_a = np.concatenate((audio_a, np.zeros(diff)))
-                len_a = audio_a.size
-                
-            if len_b < 3*sample_rate:
-                diff = 3*sample_rate - len_b
-                audio_b = np.concatenate((audio_b, np.zeros(diff)))
-                len_b = audio_b.size
-                
-            if len_a < len_b:
-                diff = len_b - len_a
-                audio_a = np.concatenate((audio_a, np.zeros(diff)))
-            else:
-                diff = len_a - len_b
-                audio_b = np.concatenate((audio_b, np.zeros(diff)))
-            
-            assert audio_a.size == audio_b.size
-            size = audio_a.size
-            
-            r = np.random.randint(size - 3*sample_rate + 1)
-            
-            audio_a = audio_a[r:r+3*sample_rate]
-            audio_b = audio_b[r:r+3*sample_rate]            
-
             S_a = librosa.feature.melspectrogram(
                 y=audio_a,
                 sr=sample_rate,
