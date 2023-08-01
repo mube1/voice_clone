@@ -1,42 +1,41 @@
-import torch.nn as nn
 import torch
 
 
 # For the generator
-class AudioAutoencoder(nn.Module):
-    def __init__(self, input_size=55168, hidden_size=1028, output_size=55168):
+class AudioAutoencoder(torch.nn.Module):
+    def __init__(self, input_size=84224, hidden_size=1028, output_size=84224):
         super(AudioAutoencoder, self).__init__()
    
-        self.encoder = nn.Sequential(            
+        self.encoder = torch.nn.Sequential(            
             nn.Linear(input_size, hidden_size),
             
-            nn.Unflatten(-1,(1,1,hidden_size)),
-            nn.BatchNorm1d(1),
-            nn.ReLU(),
-            nn.Flatten(1),
+            torch.nn.Unflatten(-1,(1,1,hidden_size)),
+            torch.nn.BatchNorm1d(1),
+            torch.nn.ReLU(),
+            torch.nn.Flatten(1),
             
-            nn.Linear(hidden_size, hidden_size),
-            nn.ReLU(),
-            nn.Unflatten(-1,(1,1,hidden_size)),
+            torch.nn.Linear(hidden_size, hidden_size),
+            torch.nn.ReLU(),
+            torch.nn.Unflatten(-1,(1,1,hidden_size)),
      
-            nn.Linear(hidden_size, 512)
+            torch.nn.Linear(hidden_size, 512)
         )
     
    ##############################################################################   
     
         self.decoder = nn.Sequential(
-            nn.Flatten(start_dim=0),
-            nn.Linear(512, hidden_size),
-            nn.Unflatten(-1,(1,1,hidden_size)),            
-            nn.BatchNorm1d(1),
-            nn.ReLU(),
+            torch.nn.Flatten(start_dim=0),
+            torch.nn.Linear(512, hidden_size),
+            torch.nn.Unflatten(-1,(1,1,hidden_size)),            
+            torch.nn.BatchNorm1d(1),
+            torch.nn.ReLU(),
             # nn.Flatten(1),
-            nn.Linear(hidden_size, hidden_size),
+            torch.nn.Linear(hidden_size, hidden_size),
             # nn.Unflatten(-1,(1,1,hidden_size)),
-            nn.BatchNorm1d(1),
-            nn.ReLU(), 
-            nn.Linear(hidden_size, output_size),
-            nn.Flatten(start_dim=0),
+            torch.nn.BatchNorm1d(1),
+            torch.nn.ReLU(), 
+            torch.nn.Linear(hidden_size, output_size),
+            torch.nn.Flatten(start_dim=0),
         )
 
     def forward(self, x):
@@ -48,16 +47,16 @@ class AudioAutoencoder(nn.Module):
 # For the discriminator
 
 
-class PatchGANDiscriminator(nn.Module):
+class PatchGANDiscriminator(torch.nn.Module):
     def __init__(self):
         super(PatchGANDiscriminator, self).__init__()
-        self.conv = nn.Conv2d(1, 64, kernel_size=4, stride=2,bias=False)
-        self.conv1 = nn.Conv2d(64, 128, kernel_size=4, stride=2,bias=False)        
-        self.conv2 = nn.Conv2d(128, 256, kernel_size=4, stride=2, bias=False)
-        self.conv3 = nn.Conv2d(256, 512, kernel_size=4, stride=2,bias=False)
-#         self.pool= nn.MaxPool2d(3, stride=2)
+        self.conv = torch.nn.Conv2d(1, 64, kernel_size=4, stride=2,bias=False)
+        self.conv1 = torch.nn.Conv2d(64, 128, kernel_size=4, stride=2,bias=False)        
+        self.conv2 = torch.nn.Conv2d(128, 256, kernel_size=4, stride=2, bias=False)
+        self.conv3 = torch.nn.Conv2d(256, 512, kernel_size=4, stride=2,bias=False)
+#         self.pool= torch.nn.MaxPool2d(3, stride=2)
         
-        self.conv4=nn.Conv2d(in_channels=512,out_channels=1,kernel_size=4,stride=1,  padding=1  )
+        self.conv4=torch.nn.Conv2d(in_channels=512,out_channels=1,kernel_size=4,stride=1,  padding=1  )
 
     def forward(self, x):
         x = self.conv(x)
