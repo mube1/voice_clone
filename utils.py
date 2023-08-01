@@ -58,9 +58,12 @@ def audio_sampler(filenames, batch_size, return_max_power=False):
 
             S_db_a = librosa.power_to_db(S_a, ref=np.max)
             S_db_b = librosa.power_to_db(S_b, ref=np.max)
-
+            
+            sound_data.append(torch.tensor(S_db_a.flatten()))
+            
             a[i, 0] = S_db_a
             b[i, 0] = S_db_b
+                       
                 
             max_power_a.append(np.max(S_a))
         
