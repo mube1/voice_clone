@@ -13,6 +13,28 @@ output_of_list_of_datasets='dataset.pkl'
 speed_factors = [0,1.1, 1.25, 1.4]
 pitch_factors = [.8,0,1.25,1.9]
 
+from torch.utils.data import Dataset, DataLoader
+
+class audioData(Dataset):
+
+    def __init__(self, dataset_file='tensor_dataset.npy'):
+        self.data=np.load(dataset_file,allow_pickle=True)
+        self.audio = self.data[:,0]
+        self.labels = self.data[:,-1]
+        
+
+    def __len__(self):
+        return len(self.audio)
+
+    def __getitem__(self, index):
+        audio = self.audio[index]
+        label = self.labels[index]
+
+        return audio, label
+
+dataset=audioData()
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
 def change_audio(full_audio_path):
   #read the audio file
   audio = AudioSegment.from_file(full_audio_path)
